@@ -18,4 +18,5 @@ Working on how to make this bot work for non-developer users.
 ![UpdatedAugust2023Gif](https://github.com/HAXN24/Dota-2-Match-Clicker-Bot/assets/119154326/13b794df-b94e-4b8d-a9fd-d9d0d35bef94)
 
 <h3>Email Demo:</h3>
-![image](https://github.com/HAXN24/Dota-2-Match-Clicker-Bot/assets/119154326/2edfae1a-f74c-407e-802a-3205df4cda04)
+
+![emailDemo](https://github.com/HAXN24/Dota2-Match-Clicker-Bot/assets/119154326/7c6f5d59-9069-4d98-b9b0-2990bc82c970)
