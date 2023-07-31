@@ -4,13 +4,14 @@ import threading
 import time
 import os
 import sys
-import emailMessenger
+import emailMessengerScriptModule
 from datetime import datetime
 
 # cmd script pyinstaller --onefile --icon="jugg.ico" --add-data "resources;resources" --noconsole Dota2ClickerBotMainUpdated.py
 
-# TO DO - go right back to searching match if a match has been canceled
-# How to make this program work for other users.
+# TO DO:
+# go right back to "searching" if a match has been canceled
+# How to make this program work for non developer users.
 
 
 sg.theme('Dark Black')
@@ -52,7 +53,7 @@ def stop_click_thread():
                      args=(matchFound,)).start()
 
 
-# Function to start the countdown if matchFound is True
+# Function to start the countdown and terminate program if matchFound is True
 
 
 def terminate_program_if_match_found(match_found):
@@ -70,7 +71,7 @@ def terminate_program_if_match_found(match_found):
 # Sends email if a match has been accepted & found
 def send_email():
     try:
-        emailMessenger.sendEmail()
+        emailMessengerScriptModule.sendEmail()
         print("Email sent successfully!\n")
     except Exception as e:
         print(f"Error sending email: {e}\n")
