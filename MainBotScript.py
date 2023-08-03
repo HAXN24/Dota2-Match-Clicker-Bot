@@ -83,6 +83,7 @@ def stop_click_thread():
                      args=(matchFound,)).start()
 
 
+# script for accept button locator and clicks it
 def click():
     global matchFound, clickThreadRunning
     clickThreadRunning = True
