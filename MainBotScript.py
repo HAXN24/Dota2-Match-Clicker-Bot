@@ -12,7 +12,7 @@ from datetime import datetime
 # TO DO:
 # go right back to "searching" if a match has been canceled
 # How to make this program work for non developer users.
-
+# Figuring out how to stop the clickThread if the click script/function is running or if a match has been found.
 
 sg.theme('Dark Black')
 layout = [
@@ -24,7 +24,7 @@ Note:
  • Dota must be open while using this program
  • Program will terminate once match found!
              """,
-             size=(40, 9),)],
+             size=(40, 9), )],
     [sg.Column([[sg.Button('Run', border_width=3, mouseover_colors=("white", "gray80"))]], justification='center'),
      sg.Column([[sg.Button("Cancel", border_width=3, mouseover_colors=("white", "gray80"))]], justification='center')],
     [sg.Output(size=(50, 10), key='-OUTPUT-', background_color='black', text_color='white',
@@ -44,18 +44,16 @@ button_path = os.path.join(resources_path, 'button.png')
 window.set_icon(icon_path)
 
 
-# Function to stop the click thread
-def stop_click_thread():
-    global matchFound
-    matchFound = True
-    STOP_EVENT.set()
-    threading.Thread(target=terminate_program_if_match_found,
-                     args=(matchFound,)).start()
+# Sends email if a match has been accepted & found
+def send_email():
+    try:
+        emailMessengerScriptModule.sendEmail()
+        print("Email sent successfully!\n")
+    except Exception as e:
+        print(f"Error sending email: {e}\n")
 
 
 # Function to start the countdown and terminate program if matchFound is True
-
-
 def terminate_program_if_match_found(match_found):
     if match_found:
         count = 5
@@ -68,25 +66,26 @@ def terminate_program_if_match_found(match_found):
         window.close()
 
 
-# Sends email if a match has been accepted & found
-def send_email():
-    try:
-        emailMessengerScriptModule.sendEmail()
-        print("Email sent successfully!\n")
-    except Exception as e:
-        print(f"Error sending email: {e}\n")
-
-
-# Flag if a match is found
-matchFound = False
-
-
 # Event to terminate click thread
 STOP_EVENT = threading.Event()
 
+# Flag if a match has been found
+matchFound = False
+
+# Flag to indicate if the click thread is running
+clickThreadRunning = False
+
+
+# Function to stop the click thread
+def stop_click_thread():
+    STOP_EVENT.set()
+    threading.Thread(target=terminate_program_if_match_found,
+                     args=(matchFound,)).start()
+
 
 def click():
-    global matchFound
+    global matchFound, clickThreadRunning
+    clickThreadRunning = True
     time.sleep(1)
     button = pyautogui.locateCenterOnScreen(button_path, minSearchTime=3000)
     if not STOP_EVENT.is_set():
@@ -107,8 +106,9 @@ def terminateProgram():
     window.close()
 
 
-# flg for script if running
+# flag for script if running
 scriptRunning = False
+
 while True:
     event, values = window.read()
     if event == "Cancel" or event == sg.WIN_CLOSED:
@@ -126,8 +126,13 @@ while True:
             scriptRunning = True
             STOP_EVENT.clear()
             # multithreading to have the GUI and click script running at the same time!
-            threading.Thread(target=click).start()
-        else:
+            clickThread = threading.Thread(target=click)
+            clickThread.start()
+        elif scriptRunning:
+            scriptRunning = True
             print("Script is already running!!\n")
+        else:
+            if event == "Cancel" or event == sg.WIN_CLOSED:
+                stop_click_thread()
 window.close()
 sys.exit()
